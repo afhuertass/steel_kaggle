@@ -11,6 +11,7 @@ import processtrain
 import argparse 
 import utils 
 import aumentations 
+import callbacks 
 
 from keras import backend as K
 import gc
@@ -22,8 +23,8 @@ parser.add_argument('--images-path' , default = "../data/train_images")
 parser.add_argument( '--output-dir' , default = "../output/")
 parser.add_argument( '--folds' , default = 5 ) # number of folds 
 parser.add_argument('--backbone' , default = "resnet50")
-parser.add_argument( '--lr' , default = 0.0001)
-parser.add_argument( '--batch-size' , default = 8 )
+parser.add_argument( '--lr' , default = 0.000001  )
+parser.add_argument( '--batch-size' , default = 2 )
 parser.add_argument( '--earlystopping-patience' , default = 20  )
 parser.add_argument('--reduce-lr-factor' , default = 0.25)
 parser.add_argument('--loss' , default = "bce")
@@ -31,12 +32,23 @@ parser.add_argument('--pretrain-weights' , default = None )
 parser.add_argument('--epochs' , default = 100 )
 results = parser.parse_args()
 
+def prepare_df( df ):
+
+	df['ImageId'] = df['ImageId_ClassId'].apply(lambda x: x.split('_')[0])
+	df['ClassId'] = df['ImageId_ClassId'].apply(lambda x: x.split('_')[1])
+	df['hasMask'] = ~ df['EncodedPixels'].isna()
+	return df
 
 def main():
 
 
 	df_train = pd.read_csv( results.train_data )
+	df_train = prepare_df( df_train )
 	df_train = df_train[:1000]
+	df_target = df_train.copy()
+
+
+
 	df_train = processtrain.generate_folds( df_train  , folds = results.folds )
 
 	print( results.output_dir )
@@ -76,18 +88,18 @@ def main():
 			model.load_weights( results.pretrain_weights )
 
 		au = aumentations.get_augmentations("valid")
-		generator_train = generator.DataGenerator( train.index, train , df_train ,  results.batch_size , aumentations = au , base_path =   results.imgs_path )
-		generator_valid = generator.DataGenerator( valid.index,  valid , df_train  , results.batch_size, aumentations = au  , base_path = results.imgs_path )
+		generator_train = generator.DataGenerator( list_IDs = train.index, df = train , target_df = df_target ,  batch_size = results.batch_size , aumentations = None , base_path =   results.images_path , mode = "fit" )
+		generator_valid = generator.DataGenerator( list_IDs= valid.index,  df = valid , target_df = df_target  , batch_size = results.batch_size, aumentations = None , base_path = results.images_path , mode = "fit" )
 
-		call_bks = callbacks.get_callbacks( results  ) # get the callbacks 
+		call_bks = callbacks.get_callbacks( results , fold   ) # get the callbacks 
 
 		model.fit_generator( 
 
 			generator = generator_train , 
 			validation_data = generator_valid , 
 			epochs = results.epochs , 
-			steps_per_epoch= generator_train.steps_generator ,   
-			validation_steps = generator_valid.steps_generator , 
+			steps_per_epoch= generator_train.samples // results.batch_size,   
+			validation_steps = generator_valid.samples  // results.batch_size , 
 			callbacks = call_bks 
 
 			) 

@@ -12,7 +12,7 @@ from keras.layers import Input
 from keras.layers.convolutional import Conv2D, Conv2DTranspose
 
 
-def get_model_unet( backbone = "resnet50" , input_shape = ( 256, 1600 , 3 ) , classes = 5  , freeze_encoder = True  ):
+def get_model_unet( backbone = "resnet50" , input_shape = ( 256, 1600 , 3 ) , classes = 4  , freeze_encoder = True  ):
 
 	# return a keras model 
 

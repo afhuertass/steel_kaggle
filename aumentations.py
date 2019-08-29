@@ -1,7 +1,7 @@
 from albumentations import (HorizontalFlip, ShiftScaleRotate, RandomContrast, RandomBrightness, Compose)
 
 
-def get_augmentations(augmentation, p):
+def get_augmentations(augmentation, p = 0.5 ):
 	if augmentation == 'valid':
 		augmentations = Compose([
 		HorizontalFlip(p=0.5),
