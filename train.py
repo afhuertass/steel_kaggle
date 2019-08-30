@@ -30,6 +30,7 @@ parser.add_argument('--reduce-lr-factor' , default = 0.25)
 parser.add_argument('--loss' , default = "bce")
 parser.add_argument('--pretrain-weights' , default = None )
 parser.add_argument('--epochs' , default = 100 )
+parser.add_argument('--swa_epoch' , default = 10 )
 results = parser.parse_args()
 
 def prepare_df( df ):
@@ -91,7 +92,7 @@ def main():
 		generator_train = generator.DataGenerator( list_IDs = train.index, df = train , target_df = df_target ,  batch_size = results.batch_size , aumentations = au , base_path =   results.images_path , mode = "fit" )
 		generator_valid = generator.DataGenerator( list_IDs= valid.index,  df = valid , target_df = df_target  , batch_size = results.batch_size, aumentations = au , base_path = results.images_path , mode = "fit" )
 
-		call_bks = callbacks.get_callbacks( results , fold   ) # get the callbacks 
+		call_bks = callbacks.get_callbacks( results , fold , generator_train.samples    ) # get the callbacks 
 
 		model.fit_generator( 
 

@@ -205,14 +205,18 @@ class CyclicLR(Callback):
 		logs = logs or {}
 		logs['lr'] = K.get_value(self.model.optimizer.lr)
 
-def get_callbacks( args, fold  ):
+def get_callbacks( args, fold, training_steps  ):
 
 	output_path = os.path.join(args.output_dir, args.backbone + "_fold_{}_.h5".format(fold) )
+	output_path_swa = os.path.join(args.output_dir, args.backbone + "_swa.h5" )
 	print(output_path)
-	cosine_callback = CosineAnnealingLearningRateSchedule( training_steps  = args.epochs )
+	cosine_callback = CosineAnnealingLearningRateSchedule( training_steps  = training_steps )
+
+	swa_callback = SWA( filepath = output_path_swa , swa_epoch = args.swa_epoch  )
 	callbacks = [EarlyStopping(monitor='val_loss', patience=10),
 	ModelCheckpoint(filepath= output_path , monitor='val_loss', save_best_only=True , save_weights_only=True) , 
-	cosine_callback
+	cosine_callback , 
+	swa_callback 
 	]
 	return callbacks
 
