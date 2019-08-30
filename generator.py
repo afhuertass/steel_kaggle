@@ -86,9 +86,9 @@ class DataGenerator(keras.utils.Sequence):
 
 			if self.au:
 
-				data = { "img" : img , "mask" : masks }
+				data = { "image" : img , "mask" : masks }
 				augmented = self.au( **data )
-				img , mask = augmented["img"] , augmented["mask"]
+				img , mask = augmented["image"] , augmented["mask"]
 
 
 				return img , mask

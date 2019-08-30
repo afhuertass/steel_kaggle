@@ -88,8 +88,8 @@ def main():
 			model.load_weights( results.pretrain_weights )
 
 		au = aumentations.get_augmentations("valid")
-		generator_train = generator.DataGenerator( list_IDs = train.index, df = train , target_df = df_target ,  batch_size = results.batch_size , aumentations = None , base_path =   results.images_path , mode = "fit" )
-		generator_valid = generator.DataGenerator( list_IDs= valid.index,  df = valid , target_df = df_target  , batch_size = results.batch_size, aumentations = None , base_path = results.images_path , mode = "fit" )
+		generator_train = generator.DataGenerator( list_IDs = train.index, df = train , target_df = df_target ,  batch_size = results.batch_size , aumentations = au , base_path =   results.images_path , mode = "fit" )
+		generator_valid = generator.DataGenerator( list_IDs= valid.index,  df = valid , target_df = df_target  , batch_size = results.batch_size, aumentations = au , base_path = results.images_path , mode = "fit" )
 
 		call_bks = callbacks.get_callbacks( results , fold   ) # get the callbacks 
 
