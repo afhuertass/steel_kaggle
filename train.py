@@ -21,16 +21,16 @@ parser = argparse.ArgumentParser(description='Segmentation code for the Severste
 parser.add_argument( '--train-data' , default = "../data/train.csv"  ) # location of the df holding the data
 parser.add_argument('--images-path' , default = "../data/train_images")
 parser.add_argument( '--output-dir' , default = "../output/")
-parser.add_argument( '--folds' , default = 5 ) # number of folds 
+parser.add_argument( '--folds' , default = 5 , type=int) # number of folds 
 parser.add_argument('--backbone' , default = "resnet50")
-parser.add_argument( '--lr' , default = 0.000001  )
-parser.add_argument( '--batch-size' , default = 2 )
-parser.add_argument( '--earlystopping-patience' , default = 20  )
-parser.add_argument('--reduce-lr-factor' , default = 0.25)
-parser.add_argument('--loss' , default = "bce")
+parser.add_argument( '--lr' , default = 0.000001 , type = float )
+parser.add_argument( '--batch-size' , default = 2 , type=int )
+parser.add_argument( '--earlystopping-patience' , default = 20 , type=int )
+parser.add_argument('--reduce-lr-factor' , default = 0.25 , type=float)
+parser.add_argument('--loss' , default = "bce" )
 parser.add_argument('--pretrain-weights' , default = None )
-parser.add_argument('--epochs' , default = 100 )
-parser.add_argument('--swa_epoch' , default = 10 )
+parser.add_argument('--epochs' , default = 100 ,type=int)
+parser.add_argument('--swa_epoch' , default = 10 , type=int)
 results = parser.parse_args()
 
 def prepare_df( df ):
@@ -42,7 +42,7 @@ def prepare_df( df ):
 
 def main():
 
-
+	print( results )
 	df_train = pd.read_csv( results.train_data )
 	df_train = prepare_df( df_train )
 	df_train = df_train[:1000]
